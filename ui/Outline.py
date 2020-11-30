@@ -17,6 +17,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from myWidget import myWidget
+from MyButton import myButton
 import source_rc
 
 
@@ -42,6 +43,7 @@ class OutlineForm(object):
         self.scrollAreaWidgetContents = myWidget()
         self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 116, 446))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
+        self.scrollAreaWidgetContents.setFocusPolicy(QtCore.Qt.ClickFocus)
         self.verticalLayout = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setSpacing(0)
@@ -67,27 +69,27 @@ class OutlineForm(object):
         self.verticalLayout_2.setObjectName("verticalLayout_2")
 
         # to main window
-        self.MainButton = QtWidgets.QPushButton(self.scrollAreaWidgetContents_2)
+        self.MainButton = myButton(self.scrollAreaWidgetContents_2)
         self.MainButton.setObjectName("MainButton")
         self.verticalLayout_2.addWidget(self.MainButton)
 
         # to body window
-        self.BodyButton = QtWidgets.QPushButton(self.scrollAreaWidgetContents_2)
+        self.BodyButton = myButton(self.scrollAreaWidgetContents_2)
         self.BodyButton.setObjectName("BodyButton")
         self.verticalLayout_2.addWidget(self.BodyButton)
 
         # create new file
-        self.NewBUtton = QtWidgets.QPushButton(self.scrollAreaWidgetContents_2)
+        self.NewBUtton = myButton(self.scrollAreaWidgetContents_2)
         self.NewBUtton.setObjectName("NewButton")
         self.verticalLayout_2.addWidget(self.NewBUtton)
 
         # delete file
-        self.DeleteButton = QtWidgets.QPushButton(self.scrollAreaWidgetContents_2)
+        self.DeleteButton = myButton(self.scrollAreaWidgetContents_2)
         self.DeleteButton.setObjectName("DeleteButton")
         self.verticalLayout_2.addWidget(self.DeleteButton)
 
         # save content
-        self.SaveButton = QtWidgets.QPushButton(self.scrollAreaWidgetContents_2)
+        self.SaveButton = myButton(self.scrollAreaWidgetContents_2)
         self.DeleteButton.setObjectName("SaveButton")
         self.verticalLayout_2.addWidget(self.SaveButton)
 

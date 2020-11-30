@@ -2,6 +2,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from myWidget import myWidget
+from MyButton import myButton
 import source_rc
 
 
@@ -83,23 +84,23 @@ class BodyForm(object):
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
 
         # create new file button
-        self.NewButton = QtWidgets.QPushButton(self.ToolFrame)
+        self.NewButton = myButton(self.ToolFrame)
         self.NewButton.setObjectName("NewButton")
         self.horizontalLayout_3.addWidget(self.NewButton)
 
         # delete chosen file button
-        self.DeleteButton = QtWidgets.QPushButton(self.ToolFrame)
+        self.DeleteButton = myButton(self.ToolFrame)
         self.DeleteButton.setObjectName("DeleteButton")
         self.horizontalLayout_3.addWidget(self.DeleteButton)
         self.horizontalLayout.addWidget(self.ToolFrame)
 
         # return main button
-        self.MainButton = QtWidgets.QPushButton(self.MainFrame)
+        self.MainButton = myButton(self.MainFrame)
         self.MainButton.setObjectName("MainButton")
         self.horizontalLayout.addWidget(self.MainButton)
 
         # to outline button
-        self.OutlineButton = QtWidgets.QPushButton(self.MainFrame)
+        self.OutlineButton = myButton(self.MainFrame)
         self.OutlineButton.setObjectName("OutlineButton")
         self.horizontalLayout.addWidget(self.OutlineButton)
 
