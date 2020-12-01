@@ -43,16 +43,18 @@ class Controller:
 
     # main switch
     def mto_body(self):
-        self.STORY_MAIN_PATH = self.STORY_ROOT_PATH+"/"+self.mainw.FileEndPathText.text()
-        self.state_number = windowstate(self.mainw)
-        self.mainw.close()
-        self.show_body(self.STORY_MAIN_PATH)
+        if self.mainw.FileEndPathText.text() != "":     # 判断尾路径是否为空
+            self.STORY_MAIN_PATH = self.STORY_ROOT_PATH+"/"+self.mainw.FileEndPathText.text()
+            self.state_number = windowstate(self.mainw)
+            self.mainw.close()
+            self.show_body(self.STORY_MAIN_PATH)
 
     def mto_outline(self):
-        self.STORY_MAIN_PATH = self.STORY_ROOT_PATH + "/" + self.mainw.FileEndPathText.text()
-        self.state_number = windowstate(self.mainw)
-        self.mainw.close()
-        self.show_outline(self.STORY_MAIN_PATH)
+        if self.mainw.FileEndPathText.text() != "":     # 判断尾路径是否为空
+            self.STORY_MAIN_PATH = self.STORY_ROOT_PATH + "/" + self.mainw.FileEndPathText.text()
+            self.state_number = windowstate(self.mainw)
+            self.mainw.close()
+            self.show_outline(self.STORY_MAIN_PATH)
 
     # body switch
     def bto_main(self):

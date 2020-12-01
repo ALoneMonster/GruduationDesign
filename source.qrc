@@ -1,6 +1,5 @@
 <RCC>
   <qresource prefix="newPrefix">
-    <file>image/RoleBackground.jpg</file>
     <file>image/background_one.jpg</file>
   </qresource>
 </RCC>

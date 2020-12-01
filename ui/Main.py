@@ -8,23 +8,23 @@ import source_rc
 
 # 主页窗口类
 class MainForm(object):
-    def setupUi(self, Form):
-        Form.setObjectName("Form")
-        Form.resize(800, 600)
+    def setupUi(self, MainForm):
+        MainForm.setObjectName("MainForm")
+        MainForm.resize(800, 600)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(Form.sizePolicy().hasHeightForWidth())
-        Form.setSizePolicy(sizePolicy)
-        Form.setMinimumSize(QtCore.QSize(800, 600))
+        sizePolicy.setHeightForWidth(MainForm.sizePolicy().hasHeightForWidth())
+        MainForm.setSizePolicy(sizePolicy)
+        MainForm.setMinimumSize(QtCore.QSize(800, 600))
         # 总布局
-        self.horizontalLayout = QtWidgets.QHBoxLayout(Form)
+        self.horizontalLayout = QtWidgets.QHBoxLayout(MainForm)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout.setSpacing(0)
         self.horizontalLayout.setObjectName("horizontalLayout")
 
         # 各组件的容器
-        self.Container = myWidget(Form)
+        self.Container = myWidget(MainForm)
         self.Container.setMinimumSize(QtCore.QSize(800, 600))
         self.Container.setStyleSheet("border-image: url(:/newPrefix/image/background_one.jpg);\n"
 "font: 75 italic 20pt \"Arial\";\n"
@@ -57,13 +57,13 @@ class MainForm(object):
         self.horizontalLayout.addWidget(self.Container)
 
         # text初始化
-        self.retranslateUi(Form)
-        QtCore.QMetaObject.connectSlotsByName(Form)
+        self.retranslateUi(MainForm)
+        QtCore.QMetaObject.connectSlotsByName(MainForm)
 
     # 窗体text初始化
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
-        Form.setWindowTitle(_translate("Form", "StoryTool"))
-        self.FileEndPathText.setText(_translate("Form", "修仙"))
-        self.BodyButton.setText(_translate("Form", "正文"))
-        self.OutlineButton.setText(_translate("Form", "大纲"))
+        Form.setWindowTitle(_translate("MainForm", "StoryTool"))
+        self.FileEndPathText.setText(_translate("MainForm", "修仙"))
+        self.BodyButton.setText(_translate("MainForm", "正文"))
+        self.OutlineButton.setText(_translate("MainForm", "大纲"))

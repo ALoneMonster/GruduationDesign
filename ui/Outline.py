@@ -23,10 +23,10 @@ import source_rc
 
 # 大纲窗口类
 class OutlineForm(object):
-    def setupUi(self, Form):
-        Form.setObjectName("Form")
-        Form.resize(800, 600)
-        self.horizontalLayout = QtWidgets.QHBoxLayout(Form)
+    def setupUi(self, OutlineForm):
+        OutlineForm.setObjectName("OutlineForm")
+        OutlineForm.resize(800, 600)
+        self.horizontalLayout = QtWidgets.QHBoxLayout(OutlineForm)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout.setSpacing(0)
         self.horizontalLayout.setObjectName("horizontalLayout")
@@ -34,7 +34,7 @@ class OutlineForm(object):
         self.verticalLayout_3.setObjectName("verticalLayout_3")
 
         # 目录文件展示滚动框
-        self.scrollArea = QtWidgets.QScrollArea(Form)
+        self.scrollArea = QtWidgets.QScrollArea(OutlineForm)
         self.scrollArea.setMinimumSize(QtCore.QSize(120, 450))
         self.scrollArea.setMaximumSize(QtCore.QSize(200, 16777215))
         self.scrollArea.setWidgetResizable(True)
@@ -54,66 +54,74 @@ class OutlineForm(object):
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self.verticalLayout_3.addWidget(self.scrollArea)
 
-        self.scrollArea_2 = QtWidgets.QScrollArea(Form)
-        self.scrollArea_2.setMinimumSize(QtCore.QSize(120, 150))
-        self.scrollArea_2.setMaximumSize(QtCore.QSize(200, 150))
-        self.scrollArea_2.setWidgetResizable(True)
-        self.scrollArea_2.setObjectName("scrollArea_2")
-        self.scrollArea_2.setStyleSheet("background: transparent")
+        # self.scrollArea_2 = QtWidgets.QScrollArea(Form)
+        # self.scrollArea_2.setMinimumSize(QtCore.QSize(120, 150))
+        # self.scrollArea_2.setMaximumSize(QtCore.QSize(200, 150))
+        # self.scrollArea_2.setWidgetResizable(True)
+        # self.scrollArea_2.setObjectName("scrollArea_2")
+        # self.scrollArea_2.setStyleSheet("background: transparent")
+
+        self.ToolFrame = QtWidgets.QFrame(OutlineForm)
+        self.ToolFrame.setMinimumSize(QtCore.QSize(120, 150))
+        self.ToolFrame.setMaximumSize(QtCore.QSize(200, 150))
+        self.ToolFrame.setStyleSheet("background: transparent;")
+        self.ToolFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.ToolFrame.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.ToolFrame.setObjectName("ToolFrame")
 
         # 工具按钮存放路径
-        self.scrollAreaWidgetContents_2 = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 116, 146))
-        self.scrollAreaWidgetContents_2.setObjectName("scrollAreaWidgetContents_2")
-        self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents_2)
+        # self.scrollAreaWidgetContents_2 = QtWidgets.QWidget()
+        # self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 116, 146))
+        # self.scrollAreaWidgetContents_2.setObjectName("scrollAreaWidgetContents_2")
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.ToolFrame)
         self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_2.setSpacing(0)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
 
         # to main window
-        self.MainButton = myButton(self.scrollAreaWidgetContents_2)
+        self.MainButton = myButton(self.ToolFrame)
         self.MainButton.setObjectName("MainButton")
         self.verticalLayout_2.addWidget(self.MainButton)
 
         # to body window
-        self.BodyButton = myButton(self.scrollAreaWidgetContents_2)
+        self.BodyButton = myButton(self.ToolFrame)
         self.BodyButton.setObjectName("BodyButton")
         self.verticalLayout_2.addWidget(self.BodyButton)
 
         # create new file
-        self.NewBUtton = myButton(self.scrollAreaWidgetContents_2)
+        self.NewBUtton = myButton(self.ToolFrame)
         self.NewBUtton.setObjectName("NewButton")
         self.verticalLayout_2.addWidget(self.NewBUtton)
 
         # delete file
-        self.DeleteButton = myButton(self.scrollAreaWidgetContents_2)
+        self.DeleteButton = myButton(self.ToolFrame)
         self.DeleteButton.setObjectName("DeleteButton")
         self.verticalLayout_2.addWidget(self.DeleteButton)
 
         # save content
-        self.SaveButton = myButton(self.scrollAreaWidgetContents_2)
+        self.SaveButton = myButton(self.ToolFrame)
         self.DeleteButton.setObjectName("SaveButton")
         self.verticalLayout_2.addWidget(self.SaveButton)
 
-        self.scrollArea_2.setWidget(self.scrollAreaWidgetContents_2)
-        self.verticalLayout_3.addWidget(self.scrollArea_2)
+        # self.scrollArea_2.setWidget(self.scrollAreaWidgetContents_2)
+        self.verticalLayout_3.addWidget(self.ToolFrame)
         self.horizontalLayout.addLayout(self.verticalLayout_3)
 
-        self.InputArea = QtWidgets.QTextEdit(Form)
+        self.InputArea = QtWidgets.QTextEdit(OutlineForm)
         self.InputArea.setMinimumSize(QtCore.QSize(680, 600))
         self.InputArea.setStyleSheet("font: 16pt \"隶书\"")       # 设置文本字体
         self.InputArea.setObjectName("InputArea")
         self.InputArea.setFocusPolicy(QtCore.Qt.NoFocus)         # 无焦点，不可编辑
         self.horizontalLayout.addWidget(self.InputArea)
 
-        self.retranslateUi(Form)
-        QtCore.QMetaObject.connectSlotsByName(Form)
+        self.retranslateUi(OutlineForm)
+        QtCore.QMetaObject.connectSlotsByName(OutlineForm)
 
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
-        Form.setWindowTitle(_translate("Form", "Outline"))
-        self.MainButton.setText(_translate("Form", "主页"))
-        self.BodyButton.setText(_translate("Form", "正文"))
-        self.NewBUtton.setText(_translate("Form", "新建"))
-        self.DeleteButton.setText(_translate("Form", "删除"))
-        self.SaveButton.setText(_translate("Form", "保存"))
+        Form.setWindowTitle(_translate("OutlineForm", "Outline"))
+        self.MainButton.setText(_translate("OutlineForm", "主页"))
+        self.BodyButton.setText(_translate("OutlineForm", "正文"))
+        self.NewBUtton.setText(_translate("OutlineForm", "新建"))
+        self.DeleteButton.setText(_translate("OutlineForm", "删除"))
+        self.SaveButton.setText(_translate("OutlineForm", "保存"))

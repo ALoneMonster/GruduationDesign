@@ -52,6 +52,7 @@ def story_cmp(fileone: str, filetwo: str) -> int:
         temp_one = fileone.split("：", 1)[0]
         temp_two = filetwo.split("：", 1)[0]
         return cmp(temp_one, temp_two)
+
     # 文件、文件夹排序（文件夹在前）
     elif "." not in fileone and "." in filetwo:
         return -1
@@ -83,7 +84,7 @@ def is_role(filename: str) -> bool:
 
 # 判断是否是小说正文章节或正文分卷 格式：第XX章：XX， 第XX卷：
 def is_chapter_volumes(filename: str) -> bool:
-    p = r"^第.+[章卷][:：]*.*$"
+    p = r"^第.+[章卷][:：]*.*$"         # 正常分卷、章节
     p1 = r"^第.+[章卷](?!角色).*$"     # 排除分卷角色文件夹
     p2 = r"^第.+[章卷](?!剧情).*$"     # 排除分卷剧情文件夹
     p3 = r"^第.+[章卷](?!杂项).*$"     # 排除分卷杂项文件夹
@@ -115,7 +116,7 @@ def story_exist(spath: str) -> None:
 # normal 0
 # mini 1
 # max 2
-# fullscreen 3
+# fullscreen 3 满屏无边框
 def windowstate(win: QWidget) -> int:
     if win.isMinimized():
         return 1
@@ -125,13 +126,3 @@ def windowstate(win: QWidget) -> int:
         return 3
     else:
         return 0
-
-
-# 窗口尺寸变化快捷键绑定的方法
-def window_size_change(win: QWidget) -> None:
-    change = {
-        0: lambda x: x.showMaximized(),
-        2: lambda x: x.showFullScreen(),
-        3: lambda x: x.showNormal()
-    }
-    change[windowstate(win)](win)
