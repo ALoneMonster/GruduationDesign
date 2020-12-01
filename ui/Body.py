@@ -6,12 +6,14 @@ from MyButton import myButton
 import source_rc
 
 
+# 正文窗口类
 class BodyForm(object):
     def setupUi(self, BodyForm):
         BodyForm.setObjectName("BodyForm")
         BodyForm.resize(802, 600)
         BodyForm.setMinimumSize(QtCore.QSize(0, 500))
 
+        # 主布局
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(BodyForm)
         self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_2.setSpacing(0)
@@ -21,6 +23,7 @@ class BodyForm(object):
         self.horizontalLayout_top.setSpacing(0)
         self.horizontalLayout_top.setObjectName("horizontalLayout_top")
 
+        # 展示目录文件的滚动框
         self.scrollArea = QtWidgets.QScrollArea(BodyForm)
         self.scrollArea.setEnabled(True)
         self.scrollArea.setMinimumSize(QtCore.QSize(150, 500))
@@ -32,7 +35,7 @@ class BodyForm(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
 
-        # 自定义Widget
+        # 自定义Widget， 填充滚动框
         self.scrollAreaWidgetContents = myWidget()
         self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 116, 496))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
@@ -43,6 +46,7 @@ class BodyForm(object):
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self.horizontalLayout_top.addWidget(self.scrollArea)
 
+        # 图片域组件
         self.graphicsView = QtWidgets.QGraphicsView(BodyForm)
         self.graphicsView.setMinimumSize(QtCore.QSize(680, 0))
         self.graphicsView.setStyleSheet("border-image: url(:/newPrefix/image/background_one.jpg);")
@@ -62,11 +66,21 @@ class BodyForm(object):
         self.MainFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.MainFrame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.MainFrame.setObjectName("MainFrame")
+        # 跳转按钮水平布局
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.MainFrame)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout.setSpacing(0)
         self.horizontalLayout.setObjectName("horizontalLayout")
 
+        # return main button
+        self.MainButton = myButton(self.MainFrame)
+        self.MainButton.setObjectName("MainButton")
+        self.horizontalLayout.addWidget(self.MainButton)
+
+        # to outline button
+        self.OutlineButton = myButton(self.MainFrame)
+        self.OutlineButton.setObjectName("OutlineButton")
+        self.horizontalLayout.addWidget(self.OutlineButton)
 
         # 新建、删除按钮容器
         self.ToolFrame = QtWidgets.QFrame(self.MainFrame)
@@ -78,6 +92,7 @@ class BodyForm(object):
         self.ToolFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.ToolFrame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.ToolFrame.setObjectName("ToolFrame")
+        # 新建删除按钮水平布局
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout(self.ToolFrame)
         self.horizontalLayout_3.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout_3.setSpacing(0)
@@ -92,24 +107,17 @@ class BodyForm(object):
         self.DeleteButton = myButton(self.ToolFrame)
         self.DeleteButton.setObjectName("DeleteButton")
         self.horizontalLayout_3.addWidget(self.DeleteButton)
+
+        # 布局合并
         self.horizontalLayout.addWidget(self.ToolFrame)
-
-        # return main button
-        self.MainButton = myButton(self.MainFrame)
-        self.MainButton.setObjectName("MainButton")
-        self.horizontalLayout.addWidget(self.MainButton)
-
-        # to outline button
-        self.OutlineButton = myButton(self.MainFrame)
-        self.OutlineButton.setObjectName("OutlineButton")
-        self.horizontalLayout.addWidget(self.OutlineButton)
-
         self.horizontalLayout_frame.addWidget(self.MainFrame)
         self.verticalLayout_2.addLayout(self.horizontalLayout_frame)
 
+        # text初始化
         self.retranslateUi(BodyForm)
         QtCore.QMetaObject.connectSlotsByName(BodyForm)
 
+    # 窗体text初始化
     def retranslateUi(self, BodyForm):
         _translate = QtCore.QCoreApplication.translate
         BodyForm.setWindowTitle(_translate("BodyForm", "BodyForm"))

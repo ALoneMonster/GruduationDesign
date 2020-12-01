@@ -6,6 +6,7 @@ from myWidget import myWidget
 import source_rc
 
 
+# 主页窗口类
 class MainForm(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
@@ -16,13 +17,13 @@ class MainForm(object):
         sizePolicy.setHeightForWidth(Form.sizePolicy().hasHeightForWidth())
         Form.setSizePolicy(sizePolicy)
         Form.setMinimumSize(QtCore.QSize(800, 600))
-        # Form.setStyleSheet("border-image: url(:/newPrefix/image/background_one.jpg);")
+        # 总布局
         self.horizontalLayout = QtWidgets.QHBoxLayout(Form)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout.setSpacing(0)
         self.horizontalLayout.setObjectName("horizontalLayout")
 
-        # 容器
+        # 各组件的容器
         self.Container = myWidget(Form)
         self.Container.setMinimumSize(QtCore.QSize(800, 600))
         self.Container.setStyleSheet("border-image: url(:/newPrefix/image/background_one.jpg);\n"
@@ -46,7 +47,7 @@ class MainForm(object):
         self.OutlineButton.setObjectName("OutlineButton")
         self.verticalLayout.addWidget(self.OutlineButton)
 
-        # 小说文件夹尾路径输入框
+        # 单行输入框——小说文件夹尾路径
         self.FileEndPathText = QtWidgets.QLineEdit(self.Container)
         self.FileEndPathText.setObjectName("FileEndPathText")
         self.verticalLayout.addWidget(self.FileEndPathText)
@@ -59,6 +60,7 @@ class MainForm(object):
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
+    # 窗体text初始化
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "StoryTool"))

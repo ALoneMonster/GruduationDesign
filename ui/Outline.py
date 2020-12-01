@@ -21,6 +21,7 @@ from MyButton import myButton
 import source_rc
 
 
+# 大纲窗口类
 class OutlineForm(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
@@ -32,6 +33,7 @@ class OutlineForm(object):
         self.verticalLayout_3 = QtWidgets.QVBoxLayout()
         self.verticalLayout_3.setObjectName("verticalLayout_3")
 
+        # 目录文件展示滚动框
         self.scrollArea = QtWidgets.QScrollArea(Form)
         self.scrollArea.setMinimumSize(QtCore.QSize(120, 450))
         self.scrollArea.setMaximumSize(QtCore.QSize(200, 16777215))
@@ -39,7 +41,7 @@ class OutlineForm(object):
         self.scrollArea.setObjectName("scrollArea")
         self.scrollArea.setStyleSheet("background: transparent")
 
-        # 目录文件按钮存放容器
+        # 自定义widget，填充滚动框
         self.scrollAreaWidgetContents = myWidget()
         self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 116, 446))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
