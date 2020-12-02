@@ -11,6 +11,7 @@ from PyQt5.QtCore import Qt, pyqtSignal
 
 # 自定义按钮
 class myButton(QtWidgets.QPushButton):
+    double_click = pyqtSignal()   # 双击信号
     focus_change = pyqtSignal()   # 焦点改变信号
 
     def __init__(self, parent: QtWidgets.QWidget = None):
@@ -18,11 +19,12 @@ class myButton(QtWidgets.QPushButton):
 
     # 鼠标双击事件
     def mouseDoubleClickEvent(self, a0: QtGui.QMouseEvent) -> None:
-        pass
+        self.double_click.emit()
 
     def keyPressEvent(self, event: QtGui.QKeyEvent) -> None:
         if event.key() == 16777220:
-            self.click()    # 回车相当于鼠标单击
+            # self.click()    # 回车相当于鼠标单击
+            self.mouseDoubleClickEvent(QtGui.QMouseEvent)    # 发送双击信号
         elif event.key() == Qt.Key_Up:
             self.focusPreviousChild()   # 焦点移到前一个组件
         elif event.key() == Qt.Key_Down:

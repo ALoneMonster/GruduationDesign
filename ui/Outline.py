@@ -54,13 +54,7 @@ class OutlineForm(object):
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self.verticalLayout_3.addWidget(self.scrollArea)
 
-        # self.scrollArea_2 = QtWidgets.QScrollArea(Form)
-        # self.scrollArea_2.setMinimumSize(QtCore.QSize(120, 150))
-        # self.scrollArea_2.setMaximumSize(QtCore.QSize(200, 150))
-        # self.scrollArea_2.setWidgetResizable(True)
-        # self.scrollArea_2.setObjectName("scrollArea_2")
-        # self.scrollArea_2.setStyleSheet("background: transparent")
-
+        # 工具按钮存放容器
         self.ToolFrame = QtWidgets.QFrame(OutlineForm)
         self.ToolFrame.setMinimumSize(QtCore.QSize(120, 150))
         self.ToolFrame.setMaximumSize(QtCore.QSize(200, 150))
@@ -69,10 +63,7 @@ class OutlineForm(object):
         self.ToolFrame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.ToolFrame.setObjectName("ToolFrame")
 
-        # 工具按钮存放路径
-        # self.scrollAreaWidgetContents_2 = QtWidgets.QWidget()
-        # self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 116, 146))
-        # self.scrollAreaWidgetContents_2.setObjectName("scrollAreaWidgetContents_2")
+        # 工具按钮存放布局
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.ToolFrame)
         self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_2.setSpacing(0)
@@ -103,7 +94,12 @@ class OutlineForm(object):
         self.DeleteButton.setObjectName("SaveButton")
         self.verticalLayout_2.addWidget(self.SaveButton)
 
-        # self.scrollArea_2.setWidget(self.scrollAreaWidgetContents_2)
+        # folder delete switch
+        self.FolderDeleteButton = myButton(self.ToolFrame)
+        self.FolderDeleteButton.setObjectName("FolderDeleteButton")
+        self.verticalLayout_2.addWidget(self.FolderDeleteButton)
+
+        # 设置布局
         self.verticalLayout_3.addWidget(self.ToolFrame)
         self.horizontalLayout.addLayout(self.verticalLayout_3)
 
@@ -125,3 +121,4 @@ class OutlineForm(object):
         self.NewBUtton.setText(_translate("OutlineForm", "新建"))
         self.DeleteButton.setText(_translate("OutlineForm", "删除"))
         self.SaveButton.setText(_translate("OutlineForm", "保存"))
+        self.FolderDeleteButton.setText(_translate("OutlineForm", "文件夹不可删除"))

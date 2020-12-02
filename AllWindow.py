@@ -14,6 +14,7 @@ from functools import partial
 from functools import cmp_to_key
 import time
 from threading import Thread
+from shutil import rmtree
 
 
 # 自定义主页窗口类
@@ -26,13 +27,16 @@ class MainWindow(QtWidgets.QWidget, MainForm):
     def __init__(self):
         super(MainWindow, self).__init__()
         self.setupUi(self)
-        # 鼠标单击绑定
-        self.BodyButton.clicked.connect(self.goBody)
-        self.OutlineButton.clicked.connect(self.goOutline)
+        # 鼠标双击绑定
+        self.BodyButton.double_click.connect(self.go_body)
+        self.OutlineButton.double_click.connect(self.go_outline)
         # 窗口尺寸变化快捷键
         self.window_shc = QtWidgets.QShortcut(QtGui.QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.Key_R), self.FileEndPathText)
         self.window_shc.setContext(QtCore.Qt.ApplicationShortcut)
         self.window_shc.activated.connect(self.window_size_change)
+        # 得到焦点并select all
+        self.FileEndPathText.setFocus()
+        self.FileEndPathText.selectAll()
 
     # 窗口尺寸变化方法
     def window_size_change(self):
@@ -44,11 +48,11 @@ class MainWindow(QtWidgets.QWidget, MainForm):
         change[windowstate(self)](self)
 
     # 前往正文页面信号发送
-    def goBody(self):
+    def go_body(self):
         self.main_to_Body.emit()
 
     # 前往大纲页面信号发送
-    def goOutline(self):
+    def go_outline(self):
         self.main_to_outline.emit()
 
 
@@ -62,34 +66,40 @@ class BodyWindow(QtWidgets.QWidget, BodyForm):
     _translate = QtCore.QCoreApplication.translate
 
     # 内部参数
-    chosen_dir = ""
-    before_dir = ""
-    fname_number = -1
-    name_end_number = 0
-    clickedPath = ""
-    name_number_list = []
+    root_dir = ""       # 小说根目录
+    chosen_dir = ""     # 当前页面路径
+    before_dir = ""     # 上一级页面路径
+    fname_number = -1   # 当前文件名称尾部
+    name_end_number = 0     # 按钮名称尾部上限
+    clickedPath = ""        # 当前文件路径
+    name_number_list = []   # 文件按钮名称尾部列表
+    folderDe_flag = False    # 是否可删除文件夹，默认否
 
     # 参数初始化、槽绑定
     def __init__(self, chosenPath):
         super(BodyWindow, self).__init__()
-        # 保证路径存在
-        story_exist(chosenPath)
+        story_exist(chosenPath)     # 保证路径存在
+
         # 初始化
+        self.root_dir = chosenPath
         self.chosen_dir = chosenPath
         self.before_dir = self.chosen_dir
-        self.setupUi(self)
-        self.MainButton.clicked.connect(self.goMain)
-        self.OutlineButton.clicked.connect(self.goOutline)
-        self.NewButton.clicked.connect(self.new)
-        self.DeleteButton.clicked.connect(self.delete)
-        # 内部参数初始化
         self.reset()
+        self.setupUi(self)
+
+        # double click
+        self.MainButton.double_click.connect(self.go_main)
+        self.OutlineButton.double_click.connect(self.go_outline)
+        self.NewButton.double_click.connect(self.new)
+        self.DeleteButton.double_click.connect(self.delete)
+        self.FolderDeleteButton.double_click.connect(self.folder_delete_switch_change)
+
         # 窗口尺寸变化快捷键
         self.window_shc = QtWidgets.QShortcut(QtGui.QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.Key_R), self.scrollArea)
         self.window_shc.setContext(QtCore.Qt.ApplicationShortcut)
         self.window_shc.activated.connect(self.window_size_change)
-        # 载入目录
-        self.reload(self.chosen_dir)
+
+        self.reload(self.chosen_dir)        # 载入目录
 
     # 窗口尺寸变化方法
     def window_size_change(self):
@@ -101,12 +111,21 @@ class BodyWindow(QtWidgets.QWidget, BodyForm):
         change[windowstate(self)](self)
 
     # 前往主页面信号发送
-    def goMain(self):
+    def go_main(self):
         self.body_to_main.emit()
 
     # 前往大纲界面信号发送
-    def goOutline(self):
+    def go_outline(self):
         self.body_to_outline.emit()
+
+    # 文件夹可删除标志改变函数
+    def folder_delete_switch_change(self):
+        if not self.folderDe_flag:
+            self.folderDe_flag = True
+            self.FolderDeleteButton.setText("文件夹可删除!")
+        else:
+            self.folderDe_flag = False
+            self.FolderDeleteButton.setText("文件夹不可删除")
 
     # 新建文件名称编辑框，单行输入框
     def new(self):
@@ -127,11 +146,11 @@ class BodyWindow(QtWidgets.QWidget, BodyForm):
         else:
             new_file_path = self.chosen_dir+"/"+new_file_name
             if not os.path.exists(new_file_path):
-                if is_chapter_volumes(new_file_name):
+                if is_volumes(new_file_name):
                     try:
                         os.mkdir(new_file_path)
                     except Exception as e:
-                        print("something is wrong!")
+                        print("文件名不能包含特殊字符:等！")
                         return
                     self.reload(self.chosen_dir)
                 else:
@@ -139,7 +158,7 @@ class BodyWindow(QtWidgets.QWidget, BodyForm):
                     try:
                         open(new_file_path, "w+")
                     except Exception as e:
-                        print("something is wrong!")
+                        print("文件名不能包含特殊字符:等！")
                         return
 
                     # 添加新按钮
@@ -148,9 +167,9 @@ class BodyWindow(QtWidgets.QWidget, BodyForm):
                     exec("self." + fname + ".setObjectName(new_file_name)")
                     exec("self.verticalLayout.addWidget(self." + fname + ")")
                     exec("self." + fname + ".setText(self._translate(\"BodyForm\", new_file_name))")
-                    exec("self." + fname + ".focus_change.connect(partial(self.whichFocused, new_file_path))")
-                    exec("self." + fname + ".focus_change.connect(partial(self.checkedChange, self.name_end_number))")
-                    exec("self." + fname + ".clicked.connect(partial(self.open, new_file_path))")
+                    exec("self." + fname + ".focus_change.connect(partial(self.which_focused, new_file_path))")
+                    exec("self." + fname + ".focus_change.connect(partial(self.checked_change, self.name_end_number))")
+                    exec("self." + fname + ".double_click.connect(partial(self.open, new_file_path))")
                     self.name_number_list.append(self.name_end_number)      # 添加文件名称索引至内部参数
                     self.name_end_number += 1
         self.newfile_nameedit.deleteLater()
@@ -158,8 +177,8 @@ class BodyWindow(QtWidgets.QWidget, BodyForm):
     # 正文open方法，与outline类有所差异
     def open(self, fpath):
         if os.path.isdir(fpath):
-            if fpath != self.before_dir:
-                self.before_dir = self.chosen_dir
+            if fpath != self.root_dir:  # 非根目录,确保上一级按钮被添加
+                self.before_dir = fpath.rsplit('/', 1)[0]
             self.chosen_dir = fpath
             self.reload(fpath)
         else:
@@ -170,12 +189,27 @@ class BodyWindow(QtWidgets.QWidget, BodyForm):
 
     # 删除文件
     def delete(self):
-        if self.clickedPath != "" and not os.path.isdir(self.clickedPath):      # 判断是否未选中或选中的是分卷文件夹
-            os.remove(self.clickedPath)         # 本地存储中删除文件
-            self.clickedPath = ""
-            exec("self.file"+str(self.fname_number)+".deleteLater()")
-            self.name_number_list.remove(self.fname_number)     # 删除即将被删除的文件索引
-            self.fname_number = -1
+        if self.clickedPath != "":     # 判断是否未选中
+            def reset_para():
+                    self.clickedPath = ""  # 重置选中文件路径
+                    exec("self.file" + str(self.fname_number) + ".deleteLater()")
+                    self.name_number_list.remove(self.fname_number)  # 删除即将被删除的文件索引
+                    self.fname_number = -1
+            if not os.path.isdir(self.clickedPath):     # 是文件
+                try:
+                    os.remove(self.clickedPath)
+                except Exception as e:
+                    print("删除文件出错！")
+                    return
+                reset_para()
+            else:       # 是文件夹，判断是否可删除
+                if self.folderDe_flag:
+                    try:
+                        rmtree(self.clickedPath, ignore_errors=True)        # shutil.rmtree删除非空文件夹，但不可删除只读文件
+                    except Exception as e:
+                        print("删除文件夹出错")
+                        return
+                    reset_para()
 
     # 重置关键参数
     def reset(self):
@@ -188,7 +222,6 @@ class BodyWindow(QtWidgets.QWidget, BodyForm):
     def reload(self, dpath):
         # 删除原按钮
         for i in self.name_number_list:
-            print(self.name_number_list)
             exec("self.file" + str(i) + ".deleteLater()")
         self.reset()
 
@@ -202,7 +235,7 @@ class BodyWindow(QtWidgets.QWidget, BodyForm):
                 fdir.remove(i)
             except Exception as e:
                 last_path =self.chosen_dir.split("/")[-1]
-                if not is_chapter_volumes(last_path):       # 避免在分卷文件夹中创建角色、剧情、杂项文件夹
+                if not is_volumes(last_path):       # 避免在分卷文件夹中创建角色、剧情、杂项文件夹
                     os.mkdir(dpath+"/"+i)
 
         # 名称排序
@@ -228,18 +261,18 @@ class BodyWindow(QtWidgets.QWidget, BodyForm):
             exec("self." + fname + ".setObjectName(f)")
             exec("self.verticalLayout.addWidget(self." + fname + ")")
             exec("self." + fname + ".setText(self._translate(\"BodyForm\", f))")
-            exec("self." + fname + ".focus_change.connect(partial(self.whichFocused, fileDict[f]))")
-            exec("self." + fname + ".focus_change.connect(partial(self.checkedChange, self.name_end_number))")
-            exec("self." + fname + ".clicked.connect(partial(self.open, fileDict[f]))")
+            exec("self." + fname + ".focus_change.connect(partial(self.which_focused, fileDict[f]))")
+            exec("self." + fname + ".focus_change.connect(partial(self.checked_change, self.name_end_number))")
+            exec("self." + fname + ".double_click.connect(partial(self.open, fileDict[f]))")
             self.name_number_list.append(self.name_end_number)      # 将文件索引添加至内部参数中
             self.name_end_number += 1
 
     # 更改选中路径参数
-    def whichFocused(self, fpath):
+    def which_focused(self, fpath):
         self.clickedPath = fpath
 
     #  # 选中后更改当前选中文件名索引
-    def checkedChange(self, name):
+    def checked_change(self, name):
         self.fname_number = name
 
 
@@ -249,12 +282,14 @@ class OutlineWindow(QtWidgets.QWidget, OutlineForm):
     outline_to_body = QtCore.pyqtSignal()
 
     # 内部参数
-    chosen_dir = ""
-    before_dir = ""
-    fname_number = -1
-    name_end_number = 0
-    clickedPath = ""
-    name_number_list = []
+    root_dir = ""       # 小说根目录
+    chosen_dir = ""     # 当前页面路径
+    before_dir = ""     # 上一级页面路径
+    fname_number = -1       # 当前文件名称尾部
+    name_end_number = 0     # 按钮名称尾部上限
+    clickedPath = ""        # 当前文件路径
+    name_number_list = []       # 文件按钮名称尾部列表
+    folderDe_flag = False  # 是否可删除文件夹，默认否
 
     # 自动保存线程
     autosave_thread = Thread()
@@ -266,25 +301,24 @@ class OutlineWindow(QtWidgets.QWidget, OutlineForm):
     # 参数初始化，槽绑定
     def __init__(self, chosenPath):
         super(OutlineWindow, self).__init__()
+        story_exist(chosenPath)     # 保证路径存在
 
-        # 保证路径存在
-        story_exist(chosenPath)
-
-        # 槽绑定
+        # 参数初始化
+        self.root_dir = chosenPath
         self.chosen_dir = chosenPath
         self.before_dir = self.chosen_dir
-        self.setupUi(self)
-        self.MainButton.clicked.connect(self.goMain)
-        self.BodyButton.clicked.connect(self.goBody)
-        self.NewBUtton.clicked.connect(self.new)
-        self.DeleteButton.clicked.connect(self.delete)
-        self.SaveButton.clicked.connect(self.save)
-
-        # 禁用保存按钮，避免误存
-        self.SaveButton.setEnabled(False)
-
-        # 内部参数初始化
         self.reset()
+        self.setupUi(self)
+
+        # 槽绑定
+        self.MainButton.double_click.connect(self.go_main)
+        self.BodyButton.double_click.connect(self.go_body)
+        self.NewBUtton.double_click.connect(self.new)
+        self.DeleteButton.double_click.connect(self.delete)
+        self.SaveButton.double_click.connect(self.save)
+        self.FolderDeleteButton.double_click.connect(self.folder_delete_switch_change)
+
+        self.SaveButton.setEnabled(False)       # 禁用保存按钮，避免误存
 
         # 设置快捷键
         self.shc = QtWidgets.QShortcut(QtGui.QKeySequence(QtCore.Qt.CTRL+QtCore.Qt.Key_S), self.InputArea)
@@ -300,8 +334,7 @@ class OutlineWindow(QtWidgets.QWidget, OutlineForm):
         self.autosave_thread = Thread(target=self.auto_save, name="AutoSaveThread", daemon=True)
         self.autosave_thread.start()
 
-        # 载入目录
-        self.reload(self.chosen_dir)
+        self.reload(self.chosen_dir)        # 载入目录
 
     # 窗口尺寸变化方法
     def window_size_change(self):
@@ -313,13 +346,22 @@ class OutlineWindow(QtWidgets.QWidget, OutlineForm):
         change[windowstate(self)](self)
 
     # 前往主页面信号发送
-    def goMain(self):
+    def go_main(self):
         print("enter")
         self.outline_to_main.emit()
 
     # 前往正文页面信号发送
-    def goBody(self):
+    def go_body(self):
         self.outline_to_body.emit()
+
+    # 文件夹可删除标志改变函数
+    def folder_delete_switch_change(self):
+        if not self.folderDe_flag:
+            self.folderDe_flag = True
+            self.FolderDeleteButton.setText("文件夹可删除!")
+        else:
+            self.folderDe_flag = False
+            self.FolderDeleteButton.setText("文件夹不可删除")
 
     # outline新建文件方法， 通过QlineEdit组件
     def new(self):
@@ -344,7 +386,7 @@ class OutlineWindow(QtWidgets.QWidget, OutlineForm):
                     try:
                         os.mkdir(new_file_path)
                     except Exception as e:
-                        print("something is wrong!")
+                        print("文件名不能包含特殊字符:等！")
                         return
                     self.reload(self.chosen_dir)
                 else:       # 是角色文件txt
@@ -352,7 +394,7 @@ class OutlineWindow(QtWidgets.QWidget, OutlineForm):
                     try:
                         open(new_file_path, "w+")
                     except Exception as e:
-                        print("something is wrong!")
+                        print("文件名不能包含特殊字符:等！")
                         return
 
                     # 添加新按钮
@@ -361,9 +403,9 @@ class OutlineWindow(QtWidgets.QWidget, OutlineForm):
                     exec("self." + fname + ".setObjectName(new_file_name)")
                     exec("self.verticalLayout.addWidget(self." + fname + ")")
                     exec("self." + fname + ".setText(self._translate(\"OutlineForm\", new_file_name))")
-                    exec("self." + fname + ".focus_change.connect(partial(self.whichFocused, new_file_path))")
-                    exec("self." + fname + ".focus_change.connect(partial(self.checkedChange, self.name_end_number))")
-                    exec("self." + fname + ".clicked.connect(partial(self.open, new_file_path))")
+                    exec("self." + fname + ".focus_change.connect(partial(self.which_focused, new_file_path))")
+                    exec("self." + fname + ".focus_change.connect(partial(self.checked_change, self.name_end_number))")
+                    exec("self." + fname + ".double_click.connect(partial(self.open, new_file_path))")
                     self.name_number_list.append(self.name_end_number)  # 添加文件名称索引至内部参数
                     self.name_end_number += 1
         self.newfile_nameedit.deleteLater()
@@ -391,8 +433,8 @@ class OutlineWindow(QtWidgets.QWidget, OutlineForm):
     # outline类open方法
     def open(self, fpath):
         if os.path.isdir(fpath):        # 打开文件夹
-            if fpath != self.before_dir:
-                self.before_dir = self.chosen_dir
+            if fpath != self.root_dir:      # 非根目录,确保上一级按钮被添加
+                self.before_dir = fpath.rsplit('/', 1)[0]
             self.chosen_dir = fpath
             self.reload(fpath)
         else:       # 读取文件内容至输入域
@@ -409,12 +451,28 @@ class OutlineWindow(QtWidgets.QWidget, OutlineForm):
 
     # 删除文件
     def delete(self):
-        if self.clickedPath != "" and not os.path.isdir(self.clickedPath):       # 判断是否未选中或选中的是文件夹
-            os.remove(self.clickedPath)     # 本地删除文件
-            self.clickedPath = ""
-            exec("self.file"+str(self.fname_number)+".deleteLater()")
-            self.name_number_list.remove(self.fname_number)
-            self.fname_number = -1
+        if self.clickedPath != "":  # 判断是否未选中
+            def reset_para():
+                self.clickedPath = ""  # 重置选中文件路径
+                exec("self.file" + str(self.fname_number) + ".deleteLater()")
+                self.name_number_list.remove(self.fname_number)  # 删除即将被删除的文件索引
+                self.fname_number = -1
+
+            if not os.path.isdir(self.clickedPath):  # 是文件
+                try:
+                    os.remove(self.clickedPath)
+                except Exception as e:
+                    print("删除文件出错！")
+                    return
+                reset_para()
+            else:  # 是文件夹，判断是否可删除
+                if self.folderDe_flag:
+                    try:
+                        rmtree(self.clickedPath, ignore_errors=True)  # shutil.rmtree删除非空文件夹，但不可删除只读文件
+                    except Exception as e:
+                        print("删除文件夹出错")
+                        return
+                    reset_para()
 
     # 重置关键参数
     def reset(self):
@@ -437,7 +495,7 @@ class OutlineWindow(QtWidgets.QWidget, OutlineForm):
         #  除去正文卷
         temp_list = fdir[:]
         for f in temp_list:
-            if is_chapter_volumes(f):
+            if is_volumes(f):
                 fdir.remove(f)
 
         # 名称排序
@@ -463,19 +521,19 @@ class OutlineWindow(QtWidgets.QWidget, OutlineForm):
             exec("self." + fname + ".setObjectName(f)")
             exec("self.verticalLayout.addWidget(self." + fname + ")")
             exec("self." + fname + ".setText(self._translate(\"OutlineForm\", f))")
-            exec("self." + fname + ".focus_change.connect(partial(self.whichFocused, fileDict[f]))")
-            exec("self." + fname + ".focus_change.connect(partial(self.checkedChange, self.name_end_number))")
-            exec("self." + fname + ".clicked.connect(partial(self.open, fileDict[f]))")
+            exec("self." + fname + ".focus_change.connect(partial(self.which_focused, fileDict[f]))")
+            exec("self." + fname + ".focus_change.connect(partial(self.checked_change, self.name_end_number))")
+            exec("self." + fname + ".double_click.connect(partial(self.open, fileDict[f]))")
             self.name_number_list.append(self.name_end_number)  # 将文件索引添加至内部参数中
             self.name_end_number += 1
 
     # 得到选中路径
-    def whichFocused(self, fpath):
+    def which_focused(self, fpath):
         self.clickedPath = fpath
         self.SaveButton.setEnabled(False)   # 选中路径已更改，禁用保存按钮, autosave_Thread线程随之结束
         self.auto_wait_flag = True         # 自动保存线程等待
         self.InputArea.setFocusPolicy(QtCore.Qt.NoFocus)  # 无焦点，不可编辑,闭面快捷键误存
 
     # 选中后更改当前选中文件名索引
-    def checkedChange(self, name):
+    def checked_change(self, name):
         self.fname_number = name

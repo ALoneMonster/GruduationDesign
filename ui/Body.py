@@ -108,9 +108,14 @@ class BodyForm(object):
         self.DeleteButton.setObjectName("DeleteButton")
         self.horizontalLayout_3.addWidget(self.DeleteButton)
 
+        # folder delete switch, 单独布局
+        self.FolderDeleteButton = myButton(self.ToolFrame)
+        self.FolderDeleteButton.setObjectName("FolderDeleteButton")
+
         # 布局合并
         self.horizontalLayout.addWidget(self.ToolFrame)
         self.horizontalLayout_frame.addWidget(self.MainFrame)
+        self.verticalLayout_2.addWidget(self.FolderDeleteButton)
         self.verticalLayout_2.addLayout(self.horizontalLayout_frame)
 
         # text初始化
@@ -125,3 +130,4 @@ class BodyForm(object):
         self.DeleteButton.setText(_translate("BodyForm", "删除"))
         self.MainButton.setText(_translate("BodyForm", "主页"))
         self.OutlineButton.setText(_translate("BodyForm", "大纲"))
+        self.FolderDeleteButton.setText(_translate("BodyForm", "文件夹不可删除"))

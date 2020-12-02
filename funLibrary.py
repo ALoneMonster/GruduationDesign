@@ -10,6 +10,7 @@ import re
 import os
 from PyQt5.QtWidgets import QWidget
 
+
 # 中文数字比较排序, 仅针对第XX卷、章：XXXX格式
 def cmp(one: str, two: str) -> int:
     number_dict = {
@@ -48,7 +49,7 @@ def cmp(one: str, two: str) -> int:
 # 针对中文数字字符串的排序，小说版，字符串格式：“第XX章：XXXX”
 def story_cmp(fileone: str, filetwo: str) -> int:
     # 正文章节，正文分卷排序
-    if is_chapter_volumes(fileone) and is_chapter_volumes(filetwo):
+    if is_chapter(fileone) or is_volumes(fileone) and is_chapter(filetwo) or is_volumes(filetwo):
         temp_one = fileone.split("：", 1)[0]
         temp_two = filetwo.split("：", 1)[0]
         return cmp(temp_one, temp_two)
@@ -74,7 +75,7 @@ def clear_suffix(filename: str) -> str:
 
 # 判断是否是角色文件，角色文件格式以”角色开头“
 def is_role(filename: str) -> bool:
-    p = r"^角色[:：]?.+$"
+    p = r"^角色：?.+$"
     pattern = re.compile(p)
     if re.match(pattern, filename):
         return True
@@ -82,18 +83,28 @@ def is_role(filename: str) -> bool:
         return False
 
 
-# 判断是否是小说正文章节或正文分卷 格式：第XX章：XX， 第XX卷：
-def is_chapter_volumes(filename: str) -> bool:
-    p = r"^第.+[章卷][:：]*.*$"         # 正常分卷、章节
-    p1 = r"^第.+[章卷](?!角色).*$"     # 排除分卷角色文件夹
-    p2 = r"^第.+[章卷](?!剧情).*$"     # 排除分卷剧情文件夹
-    p3 = r"^第.+[章卷](?!杂项).*$"     # 排除分卷杂项文件夹
+# 判断是否是小说正文分卷 格式：第XX卷[:：]XX
+def is_volumes(filename: str) -> bool:
+    p = r"^第.+卷：?.*$"         # 正常分卷、章节
+    p1 = r"^第.+卷(?!角色).*$"     # 排除分卷角色文件夹
+    p2 = r"^第.+卷(?!剧情).*$"     # 排除分卷剧情文件夹
+    p3 = r"^第.+卷(?!杂项).*$"     # 排除分卷杂项文件夹
     pattern = re.compile(p)
     pattern1 = re.compile(p1)
     pattern2 = re.compile(p2)
     pattern3 = re.compile(p3)
     if re.match(pattern, filename) and re.match(pattern1, filename) and re.match(pattern2, filename) and\
             re.match(pattern3, filename):
+        return True
+    else:
+        return False
+
+
+# 判断是否是小说正文章节 格式： 第XX章[:：]XXX
+def is_chapter(filename: str) -> bool:
+    p = r"^第.+章：?.*$"
+    pattern = re.compile(p)
+    if re.match(pattern, filename):
         return True
     else:
         return False
